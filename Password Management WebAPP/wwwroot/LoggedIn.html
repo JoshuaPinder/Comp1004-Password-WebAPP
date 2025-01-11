@@ -1,0 +1,52 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="LoggedInStyles.css">
+</head>
+<body>
+    <header class="top-bar">
+        <h1>Welcome to Password Management App</h1>
+        <button id="logout" class="action-button">Logout</button>
+    </header>
+
+    <div class="side-nav" id="sideNav">
+        <button class="close-btn" onclick="toggleNav()">&times;</button>
+        <a href="#" class="nav-item">Password Generator</a>
+        <a href="#" class="nav-item">Saved Passwords</a>
+        <a href="#" class="nav-item">Password Health Check</a>
+        <a href="#" class="nav-item">Secure Notes</a>
+    </div>
+
+    <main>
+        <button class="open-nav" onclick="toggleNav()">&#9776; Menu</button>
+        <p>Explore the features of your password management app here!</p>
+    </main>
+
+    <script>
+        // Ensure user is logged in
+        document.addEventListener("DOMContentLoaded", () => {
+            const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
+            if (!isLoggedIn) {
+                alert("Please log in to access the dashboard.");
+                window.location.href = "login.html";
+            }
+        });
+
+        // Logout functionality
+        document.getElementById("logout").addEventListener("click", () => {
+            localStorage.removeItem("isLoggedIn");
+            alert("You have been logged out.");
+            window.location.href = "login.html";
+        });
+
+        // Toggle the side navigation
+        function toggleNav() {
+            const sideNav = document.getElementById("sideNav");
+            sideNav.style.width = sideNav.style.width === "250px" ? "0" : "250px";
+        }
+    </script>
+</body>
+</html>

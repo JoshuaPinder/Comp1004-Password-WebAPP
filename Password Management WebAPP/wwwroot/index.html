@@ -1,0 +1,65 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Management App</title>
+    <link rel="stylesheet" href="indexstyles.css">
+</head>
+<body>
+    <!-- Top Bar -->
+    <header class="top-bar">
+        <h1 class="app-title">Password Management App</h1>
+        <div class="user-actions" id="userActions">
+            <a href="login.html" class="action-button">Login</a>
+            <a href="signup.html" class="action-button">Signup</a>
+        </div>
+    </header>
+
+    <!-- Side Navigation Bar -->
+    <div class="side-nav" id="sideNav">
+        <button class="close-btn" onclick="toggleNav()">&times;</button>
+        <a href="#" id="feature-1" class="nav-item disabled">Password Generator</a>
+        <a href="#" id="feature-2" class="nav-item disabled">Saved Passwords</a>
+        <a href="#" id="feature-3" class="nav-item disabled">Password Health Check</a>
+        <a href="#" id="feature-4" class="nav-item disabled">Secure Notes</a>
+    </div>
+
+    <!-- Main Content Area -->
+    <main>
+        <button class="open-nav" onclick="toggleNav()">&#9776; Menu</button>
+        <p>Welcome to the Password Management App! Use the menu to navigate features once logged in.</p>
+    </main>
+
+    <script>
+        // Toggle the side navigation
+        function toggleNav() {
+            const sideNav = document.getElementById('sideNav');
+            sideNav.style.width = sideNav.style.width === '250px' ? '0' : '250px';
+        }
+
+        // Check login state
+        const firstName = localStorage.getItem('firstName');
+        const isLoggedIn = firstName !== null;
+
+        // Update top right buttons based on login state
+        const userActions = document.getElementById('userActions');
+        if (isLoggedIn) {
+            userActions.innerHTML = `<span>Securely Logged in as "${firstName}"</span>`;
+        }
+
+        // Disable or enable navigation links based on login state
+        document.querySelectorAll('.nav-item').forEach(item => {
+            if (!isLoggedIn) {
+                item.classList.add('disabled');
+                item.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    alert('Please log in to access this feature.');
+                });
+            } else {
+                item.classList.remove('disabled');
+            }
+        });
+    </script>
+</body>
+</html>
