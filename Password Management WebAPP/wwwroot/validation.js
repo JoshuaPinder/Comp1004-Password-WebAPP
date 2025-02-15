@@ -1,99 +1,99 @@
-const form = document.getElementById('form');
-const firstname_input = document.getElementById('firstname-input');
-const email_input = document.getElementById('email-input');
-const password_input = document.getElementById('password-input');
-const repeat_password_input = document.getElementById('repeat-password-input');
-const error_message = document.getElementById('error-message');
+const API_URL = "https://comp1004-password-webapp.onrender.com";  // Your backend URL
 
-form.addEventListener('submit', (e) => {
-    let errors = [];
+document.addEventListener("DOMContentLoaded", () => {
+    const form = document.getElementById('form');
+    const error_message = document.getElementById('error-message');
 
-    if (firstname_input) {
-        // Signup Form
-        errors = getSignupFormErrors(firstname_input.value, email_input.value, password_input.value, repeat_password_input.value);
-        if (errors.length === 0) {
-            // Save user data
-            saveUser(firstname_input.value, email_input.value, password_input.value);
-            alert("Account created successfully! Please log in.");
-            window.location.href = "login.html"; // Redirect to login
-        }
-    } else {
-        // Login Form
-        errors = getLoginFormErrors(email_input.value, password_input.value);
-        if (errors.length === 0) {
-            if (authenticateUser(email_input.value, password_input.value)) {
-                localStorage.setItem("isLoggedIn", "true");
-                alert("Login successful!");
-                window.location.href = "LoggedIn.html"; // Redirect to dashboard
+    if (form) {
+        form.addEventListener('submit', async (e) => {
+            e.preventDefault();
+
+            const email = document.getElementById('email-input').value;
+            const password = document.getElementById('password-input').value;
+            const firstname = document.getElementById('firstname-input')?.value;
+
+            if (firstname) {
+                // Signup Request
+                const res = await fetch(`${API_URL}/signup`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ firstname, email, password })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    alert("Signup successful! Please log in.");
+                    window.location.href = "login.html";
+                } else {
+                    error_message.innerText = data.message;
+                }
             } else {
-                errors.push("Invalid email or password.");
+                // Login Request
+                const res = await fetch(`${API_URL}/login`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const data = await res.json();
+                if (res.ok) {
+                    localStorage.setItem("token", data.token);
+                    localStorage.setItem("firstname", data.firstname);
+                    window.location.href = "LoggedIn.html";
+                } else {
+                    error_message.innerText = data.message;
+                }
             }
-        }
+        });
     }
 
-    if (errors.length > 0) {
-        e.preventDefault();
-        error_message.innerText = errors.join(". ");
+    // Protect the logged-in page
+    if (window.location.pathname.includes("LoggedIn.html")) {
+        checkAuth();
     }
 });
 
-function getSignupFormErrors(firstname, email, password, repeatPassword) {
-    let errors = [];
-    if (firstname === '' || firstname == null) errors.push('Firstname is required');
-    if (email === '' || email == null) errors.push('Email is required');
-    if (password === '' || password == null) errors.push('Password is required');
-    if (password.length < 8) errors.push('Password must have at least 8 characters');
-    if (password !== repeatPassword) errors.push('Passwords do not match');
-    return errors;
+async function checkAuth() {
+    const token = localStorage.getItem("token");
+    if (!token) {
+        alert("Please log in.");
+        window.location.href = "login.html";
+        return;
+    }
+
+    document.getElementById("logout").addEventListener("click", () => {
+        localStorage.removeItem("token");
+        localStorage.removeItem("firstname");
+        window.location.href = "index.html";
+    });
+
+    // Fetch user-specific passwords
+    const res = await fetch(`${API_URL}/passwords`, {
+        method: "GET",
+        headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    const passwords = await res.json();
+    console.log("User passwords:", passwords);
 }
 
-function getLoginFormErrors(email, password) {
-    let errors = [];
-    if (email === '' || email == null) errors.push('Email is required');
-    if (password === '' || password == null) errors.push('Password is required');
-    return errors;
-}
+// Function to save a password
+async function savePassword(website, password) {
+    const token = localStorage.getItem("token");
 
-function saveUser(firstname, email, password) {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    users.push({ firstname, email, password });
-    localStorage.setItem('users', JSON.stringify(users));
-}
+    const res = await fetch(`${API_URL}/save-password`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ website, password })
+    });
 
-function authenticateUser(email, password) {
-    const users = JSON.parse(localStorage.getItem('users')) || [];
-    return users.some(user => user.email === email && user.password === password);
-}
-
-form.addEventListener('submit', (e) => {
-    e.preventDefault(); // Prevent default form submission
-
-    let errors = [];
-
-    if (firstname_input) {
-        // Signup Form
-        errors = getSignupFormErrors(firstname_input.value, email_input.value, password_input.value, repeat_password_input.value);
-        if (errors.length === 0) {
-            // Save user data
-            saveUser(firstname_input.value, email_input.value, password_input.value);
-            alert("Account created successfully! Please log in.");
-            window.location.href = "login.html"; // Redirect to login
-        }
+    const data = await res.json();
+    if (res.ok) {
+        alert("Password saved successfully!");
     } else {
-        // Login Form
-        errors = getLoginFormErrors(email_input.value, password_input.value);
-        if (errors.length === 0) {
-            if (authenticateUser(email_input.value, password_input.value)) {
-                localStorage.setItem("isLoggedIn", "true");
-                alert("Login successful!");
-                window.location.href = "LoggedIn.html"; // Redirect to the dashboard
-            } else {
-                errors.push("Invalid email or password.");
-            }
-        }
+        alert(data.message);
     }
-
-    if (errors.length > 0) {
-        error_message.innerText = errors.join(". ");
-    }
-});
+}

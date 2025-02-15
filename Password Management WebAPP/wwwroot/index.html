@@ -32,34 +32,33 @@
     </main>
 
     <script>
-        // Toggle the side navigation
-        function toggleNav() {
-            const sideNav = document.getElementById('sideNav');
-            sideNav.style.width = sideNav.style.width === '250px' ? '0' : '250px';
-        }
-
-        // Check login state
-        const firstName = localStorage.getItem('firstName');
-        const isLoggedIn = firstName !== null;
-
-        // Update top right buttons based on login state
-        const userActions = document.getElementById('userActions');
-        if (isLoggedIn) {
-            userActions.innerHTML = `<span>Securely Logged in as "${firstName}"</span>`;
-        }
-
-        // Disable or enable navigation links based on login state
-        document.querySelectorAll('.nav-item').forEach(item => {
-            if (!isLoggedIn) {
-                item.classList.add('disabled');
-                item.addEventListener('click', (e) => {
-                    e.preventDefault();
-                    alert('Please log in to access this feature.');
+        document.addEventListener("DOMContentLoaded", () => {
+            const token = localStorage.getItem("token");
+            const firstName = localStorage.getItem("firstname");
+    
+            const userActions = document.getElementById('userActions');
+            if (token) {
+                userActions.innerHTML = `<span>Logged in as "${firstName}"</span> 
+                                         <button id="logout">Logout</button>`;
+                
+                document.getElementById("logout").addEventListener("click", () => {
+                    localStorage.removeItem("token");
+                    localStorage.removeItem("firstname");
+                    window.location.href = "index.html";
                 });
+    
+                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('disabled'));
             } else {
-                item.classList.remove('disabled');
+                document.querySelectorAll('.nav-item').forEach(item => {
+                    item.classList.add('disabled');
+                    item.addEventListener('click', (e) => {
+                        e.preventDefault();
+                        alert('Please log in to access this feature.');
+                    });
+                });
             }
         });
     </script>
+    
 </body>
 </html>
