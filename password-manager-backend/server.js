@@ -105,3 +105,8 @@ app.get("/passwords", async (req, res) => {
 
 // **Start Server**
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
+
+//Default route
+app.get("/", (req, res) => {
+  res.send("🚀 Backend is Running!");
+});
