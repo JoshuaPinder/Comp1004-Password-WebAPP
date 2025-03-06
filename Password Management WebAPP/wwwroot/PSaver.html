@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Password Saver</title>
+    <link rel="stylesheet" href="PSaverStyles.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Password Saver</h1>
+        
+        <form id="set-pin-form" style="display: none;">
+            <input type="password" id="new-pin" placeholder="Set your PIN" required>
+            <button type="submit">Set PIN</button>
+        </form>
+        
+        <form id="pin-form">
+            <input type="password" id="pin" placeholder="Enter your PIN" required>
+            <button type="submit">Unlock</button>
+        </form>
+        
+        <form id="password-form" style="display: none;">
+            <input type="text" id="website" placeholder="Website" required>
+            <input type="text" id="username" placeholder="Username/Email" required>
+            <input type="password" id="password" placeholder="Password" required>
+            <button type="submit">Save Password</button>
+        </form>
+        
+        <div id="password-list" class="password-list"></div>
+
+        <!-- Change PIN Section -->
+        <div id="change-pin-section" style="display: none;">
+            <h2>Change PIN</h2>
+            <form id="change-pin-form">
+                <input type="password" id="current-pin" placeholder="Current PIN" required>
+                <input type="password" id="new-pin-change" placeholder="New PIN" required>
+                <button type="submit">Update PIN</button>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        const setPinForm = document.getElementById('set-pin-form');
+        const pinForm = document.getElementById('pin-form');
+        const passwordForm = document.getElementById('password-form');
+        const passwordList = document.getElementById('password-list');
+        const changePinSection = document.getElementById('change-pin-section');
+        const changePinForm = document.getElementById('change-pin-form');
+
+        let storedPin = localStorage.getItem('pin');
+
+        if (!storedPin) {
+            setPinForm.style.display = 'block';
+        }
+
+        setPinForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const newPin = document.getElementById('new-pin').value;
+            localStorage.setItem('pin', newPin);
+            storedPin = newPin;
+            setPinForm.style.display = 'none';
+            pinForm.style.display = 'block';
+        });
+
+        pinForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const pin = document.getElementById('pin').value;
+            if (pin === storedPin) {
+                pinForm.style.display = 'none';
+                passwordForm.style.display = 'block';
+                changePinSection.style.display = 'block';
+                loadPasswords();
+            } else {
+                alert('Incorrect PIN');
+            }
+        });
+
+        passwordForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const website = document.getElementById('website').value;
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            savePassword(website, username, password);
+            loadPasswords();
+        });
+
+        function savePassword(website, username, password) {
+            const passwords = JSON.parse(localStorage.getItem('passwords')) || [];
+            const hashedPassword = btoa(password);
+            passwords.push({ website, username, password: hashedPassword });
+            localStorage.setItem('passwords', JSON.stringify(passwords));
+        }
+
+        function loadPasswords() {
+            const passwords = JSON.parse(localStorage.getItem('passwords')) || [];
+            passwordList.innerHTML = '';
+            passwords.forEach((item, index) => {
+                const div = document.createElement('div');
+                div.className = 'password-item';
+                div.innerHTML = `<span>${item.website}</span><span>${item.username}</span>
+                                <span class="password" data-password="${item.password}">********</span>
+                                <span class="show-password" data-password="${item.password}">👁️</span>
+                                <button class="delete-password" data-index="${index}">Delete</button>`;
+                passwordList.appendChild(div);
+            });
+            
+            document.querySelectorAll('.show-password').forEach(button => {
+                button.addEventListener('mouseover', function() {
+                    this.previousElementSibling.textContent = atob(this.dataset.password);
+                });
+                button.addEventListener('mouseout', function() {
+                    this.previousElementSibling.textContent = '********';
+                });
+            });
+
+            document.querySelectorAll('.delete-password').forEach(button => {
+                button.addEventListener('click', function() {
+                    const index = this.dataset.index;
+                    const enteredPin = prompt('Enter your PIN to delete this password:');
+                    if (enteredPin === storedPin) {
+                        deletePassword(index);
+                    } else {
+                        alert('Incorrect PIN');
+                    }
+                });
+            });
+        }
+
+        function deletePassword(index) {
+            let passwords = JSON.parse(localStorage.getItem('passwords')) || [];
+            passwords.splice(index, 1);
+            localStorage.setItem('passwords', JSON.stringify(passwords));
+            loadPasswords();
+        }
+
+        changePinForm.addEventListener('submit', function(event) {
+            event.preventDefault();
+            const currentPin = document.getElementById('current-pin').value;
+            const newPin = document.getElementById('new-pin-change').value;
+            if (currentPin === storedPin) {
+                localStorage.setItem('pin', newPin);
+                storedPin = newPin;
+                alert('PIN changed successfully');
+            } else {
+                alert('Incorrect current PIN');
+            }
+        });
+    </script>
+</body>
+</html>
