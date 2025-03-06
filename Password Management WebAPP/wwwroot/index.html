@@ -33,17 +33,16 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", () => {
-            const token = localStorage.getItem("token");
-            const firstName = localStorage.getItem("firstname");
-    
+            const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+            const firstName = loggedInUser ? loggedInUser.firstname : null;
+            
             const userActions = document.getElementById('userActions');
-            if (token) {
+            if (loggedInUser) {
                 userActions.innerHTML = `<span>Logged in as "${firstName}"</span> 
                                          <button id="logout">Logout</button>`;
                 
                 document.getElementById("logout").addEventListener("click", () => {
-                    localStorage.removeItem("token");
-                    localStorage.removeItem("firstname");
+                    localStorage.removeItem("loggedInUser");
                     window.location.href = "index.html";
                 });
     

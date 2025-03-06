@@ -15,7 +15,7 @@
     <!-- Side Navigation Bar -->
     <div class="side-nav" id="sideNav">
         <button class="close-btn" onclick="toggleNav()">&times;</button>
-        <a href="#" id="feature-1" class="nav-item disabled">Password Generator</a>
+        <a href="PGenerator.html" id="feature-1" class="nav-item">Password Generator</a>
         <a href="#" id="feature-2" class="nav-item disabled">Saved Passwords</a>
         <a href="#" id="feature-3" class="nav-item disabled">Password Health Check</a>
         <a href="#" id="feature-4" class="nav-item disabled">Secure Notes</a>
@@ -31,28 +31,29 @@
         // Toggle the side navigation
         function toggleNav() {
             const sideNav = document.getElementById('sideNav');
-            sideNav.style.width = sideNav.style.width === '250px' ? '0' : '250px';
+            if (sideNav.style.width === '250px') {
+                sideNav.style.width = '0';
+            } else {
+                sideNav.style.width = '250px';
+            }
         }
     </script>
-        <script>
-            document.addEventListener("DOMContentLoaded", () => {
-                const isLoggedIn = localStorage.getItem("isLoggedIn") === "true";
-            if (!isLoggedIn) {
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
+            if (!loggedInUser) {
                 alert("Please log in to access the dashboard.");
-            window.location.href = "login.html";
-                }
-            });
+                window.location.href = "login.html";
+            } else {
+                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('disabled'));
+            }
+        });
 
-            document.getElementById("logout").addEventListener("click", () => {
-                localStorage.removeItem("isLoggedIn");
+        document.getElementById("logout").addEventListener("click", () => {
+            localStorage.removeItem("loggedInUser");
             alert("You have been logged out.");
             window.location.href = "login.html";
-            });  
-            
-            function toggleNav() {
-                const sideNav = document.getElementById("sideNav");
-            sideNav.style.width = sideNav.style.width === "250px" ? "0" : "250px";
-            }
+        });  
     </script>
 </body>
 </html>

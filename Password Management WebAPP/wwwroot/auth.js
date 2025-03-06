@@ -48,7 +48,8 @@ function signup(firstname, email, password) {
         return { success: false, message: "Email already exists" };
     }
     
-    users.push({ firstname, email, password });
+    const encodedPassword = btoa(password); // Base64 encoding (temporary obfuscation)
+    users.push({ firstname, email, password: encodedPassword });
     localStorage.setItem("users", JSON.stringify(users));
     return { success: true, message: "User registered successfully" };
 }
@@ -56,7 +57,8 @@ function signup(firstname, email, password) {
 // Function to handle user login
 function login(email, password) {
     let users = JSON.parse(localStorage.getItem("users")) || [];
-    const user = users.find(user => user.email === email && user.password === password);
+    const encodedPassword = btoa(password);
+    const user = users.find(user => user.email === email && user.password === encodedPassword);
     
     if (!user) {
         return { success: false, message: "Invalid credentials" };
@@ -90,8 +92,9 @@ function savePassword(website, password) {
         return;
     }
     
+    const encodedPassword = btoa(password); // Encode password before storing
     let passwords = JSON.parse(localStorage.getItem("passwords")) || [];
-    passwords.push({ email: loggedInUser.email, website, password });
+    passwords.push({ email: loggedInUser.email, website, password: encodedPassword });
     localStorage.setItem("passwords", JSON.stringify(passwords));
     alert("Password saved successfully!");
 }
@@ -102,5 +105,8 @@ function getPasswords() {
     if (!loggedInUser) return [];
     
     let passwords = JSON.parse(localStorage.getItem("passwords")) || [];
-    return passwords.filter(p => p.email === loggedInUser.email);
+    return passwords.filter(p => p.email === loggedInUser.email).map(p => ({
+        website: p.website,
+        password: atob(p.password) // Decode password before displaying
+    }));
 }
