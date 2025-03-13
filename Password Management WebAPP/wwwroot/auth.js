@@ -1,5 +1,7 @@
 // auth.js - Local authentication for the password manager
 
+// 10/03 - Import hashing library for password hashing!!
+
 document.addEventListener("DOMContentLoaded", () => {
     const form = document.getElementById("form");
     const errorMessage = document.getElementById("error-message");
