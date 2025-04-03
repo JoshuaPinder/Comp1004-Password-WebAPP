@@ -1,63 +1,230 @@
 ﻿<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Password Management App</title>
-    <link rel="stylesheet" href="indexstyles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Password Management SPA</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="script.js" defer></script>
+  <style>
+    /* Basic styles for showing/hiding sections */
+    .page { display: none; }
+    .page.active { display: block; }
+  </style>
 </head>
 <body>
-    <!-- Top Bar -->
-    <header class="top-bar">
-        <h1 class="app-title">Password Management App</h1>
-        <div class="user-actions" id="userActions">
-            <a href="login.html" class="action-button">Login</a>
-            <a href="signup.html" class="action-button">Signup</a>
-        </div>
+  <div id="app">
+    <!-- Navigation Bar -->
+    <header id="mainHeader" class="top-bar">
+      <h1 class="app-title">Password Management App</h1>
+      <nav id="navMenu">
+        <a href="#" class="nav-item" onclick="navigateTo('dashboard')">Dashboard</a>
+        <a href="#" class="nav-item" onclick="navigateTo('passwordGenerator')">Password Generator</a>
+        <a href="#" class="nav-item" onclick="navigateTo('passwordSaver')">Saved Passwords</a>
+        <a href="#" class="nav-item" onclick="navigateTo('passwordHealth')">Password Health Check</a>
+        <a href="#" class="nav-item" onclick="logout()">Logout</a>
+      </nav>
+      <div id="authActions">
+        <a href="#" onclick="navigateTo('login')" class="action-button">Login</a>
+        <a href="#" onclick="navigateTo('signup')" class="action-button">Signup</a>
+      </div>
     </header>
 
-    <!-- Side Navigation Bar -->
-    <div class="side-nav" id="sideNav">
-        <button class="close-btn" onclick="toggleNav()">&times;</button>
-        <a href="PGenerator.html" id="feature-1" class="">Password Generator</a>
-        <a href="#" id="feature-2" class="nav-item disabled">Saved Passwords</a>
-        <a href="#" id="feature-3" class="nav-item disabled">Password Health Check</a>
-        <a href="#" id="feature-4" class="nav-item disabled">Secure Notes</a>
-    </div>
+    <!-- Sections for each page -->
+    <section id="index" class="page active">
+      <main>
+        <p>Welcome to the Password Management App! Please log in or sign up to continue.</p>
+      </main>
+    </section>
 
-    <!-- Main Content Area -->
-    <main>
-        <button class="open-nav" onclick="toggleNav()">&#9776; Menu</button>
-        <p>Welcome to the Password Management App! Use the menu to navigate features once logged in.</p>
-    </main>
+    <!-- Login Page -->
+    <section id="login" class="page">
+      <div class="wrapper">
+        <h1>Login</h1>
+        <p id="login-error-message"></p>
+        <form id="login-form">
+          <div>
+            <label for="login-email"><span>@</span></label>
+            <input type="email" name="email" id="login-email" placeholder="Email" required />
+          </div>
+          <div>
+            <label for="login-password">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                <path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Z" />
+              </svg>
+            </label>
+            <input type="password" name="password" id="login-password" placeholder="Password" required />
+          </div>
+          <button type="submit">Login</button>
+        </form>
+        <p>New here? <a href="#" onclick="navigateTo('signup')">Create an Account</a></p>
+      </div>
+    </section>
 
-    <script>
-        document.addEventListener("DOMContentLoaded", () => {
-            const loggedInUser = JSON.parse(localStorage.getItem("loggedInUser"));
-            const firstName = loggedInUser ? loggedInUser.firstname : null;
-            
-            const userActions = document.getElementById('userActions');
-            if (loggedInUser) {
-                userActions.innerHTML = `<span>Logged in as "${firstName}"</span> 
-                                         <button id="logout">Logout</button>`;
-                
-                document.getElementById("logout").addEventListener("click", () => {
-                    localStorage.removeItem("loggedInUser");
-                    window.location.href = "index.html";
-                });
-    
-                document.querySelectorAll('.nav-item').forEach(item => item.classList.remove('disabled'));
-            } else {
-                document.querySelectorAll('.nav-item').forEach(item => {
-                    item.classList.add('disabled');
-                    item.addEventListener('click', (e) => {
-                        e.preventDefault();
-                        alert('Please log in to access this feature.');
-                    });
-                });
-            }
-        });
-    </script>
-    
+    <!-- Signup Page -->
+    <section id="signup" class="page">
+      <div class="wrapper">
+        <h1>Signup</h1>
+        <p id="signup-error-message"></p>
+        <form id="signup-form">
+          <div>
+            <label for="signup-firstname">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                <path d="M480-480q-66 0-113-47t-47-113q0-66 47-113t113-47q66 0 113 47t47 113q0 66-47 113t-113 47ZM160-160v-112q0-34 17.5-62.5T224-378q62-31 126-46.5T480-440q66 0 130 15.5T736-378q29 15 46.5 43.5T800-272v112H160Z" />
+              </svg>
+            </label>
+            <input type="text" name="firstname" id="signup-firstname" placeholder="Firstname" required />
+          </div>
+          <div>
+            <label for="signup-email"><span>@</span></label>
+            <input type="email" name="email" id="signup-email" placeholder="Email" required />
+          </div>
+          <div>
+            <label for="signup-password">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                <path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Z" />
+              </svg>
+            </label>
+            <input type="password" name="password" id="signup-password" placeholder="Password" required />
+          </div>
+          <div>
+            <label for="signup-repeat-password">
+              <svg xmlns="http://www.w3.org/2000/svg" height="24" viewBox="0 -960 960 960" width="24">
+                <path d="M240-80q-33 0-56.5-23.5T160-160v-400q0-33 23.5-56.5T240-640h40v-80q0-83 58.5-141.5T480-920q83 0 141.5 58.5T680-720v80h40q33 0 56.5 23.5T800-560v400q0 33-23.5 56.5T720-80H240Z" />
+              </svg>
+            </label>
+            <input type="password" name="repeat-password" id="signup-repeat-password" placeholder="Repeat Password" required />
+          </div>
+          <button type="submit">Signup</button>
+        </form>
+        <p>Already have an account? <a href="#" onclick="navigateTo('login')">Login</a></p>
+      </div>
+    </section>
+
+    <!-- Dashboard Page -->
+    <section id="dashboard" class="page">
+      <div class="dashboard-content">
+        <h1>Welcome, <span id="user-firstname"></span>!</h1>
+        <p>Use the navigation menu above to access the features.</p>
+      </div>
+    </section>
+
+    <!-- Password Generator Page -->
+    <section id="passwordGenerator" class="page">
+      <h1>Password Generator</h1>
+      <div class="generator">
+        <div class="password">
+          <input type="text" id="generator-password" />
+          <button>copy</button>
+        </div>
+        <div class="range">
+          <input type="range" min="4" max="24" value="8" />
+          <span>8</span>
+        </div>
+        <div class="options">
+          <div class="option">
+            <label>
+              <input type="checkbox" id="lowercaseCb" checked />
+              <span>a-z</span>
+            </label>
+          </div>
+          <div class="option">
+            <label>
+              <input type="checkbox" id="uppercaseCb" />
+              <span>A-Z</span>
+            </label>
+          </div>
+          <div class="option">
+            <label>
+              <input type="checkbox" id="digitsCb" />
+              <span>0-9</span>
+            </label>
+          </div>
+          <div class="option">
+            <label>
+              <input type="checkbox" id="specialsCb" />
+              <span>!@$#%^</span>
+            </label>
+          </div>
+        </div>
+        <button class="generate">generate</button>
+      </div>
+    </section>
+
+    <!-- Password Saver Page -->
+    <section id="passwordSaver" class="page">
+      <div class="container">
+        <h1>Password Saver</h1>
+        <!-- Form for adding a new password -->
+        <form id="password-form">
+          <div class="input-row">
+            <input type="text" id="website" placeholder="Website" required />
+            <input type="text" id="username" placeholder="Username/Email" required />
+          </div>
+          <div class="input-center">
+            <input type="password" id="password" placeholder="Password" required />
+          </div>
+          <!-- Instead of a modal picker, we have a dropdown of 5 colors -->
+          <div class="color-chooser">
+            <label>Background Colour:</label>
+            <select id="colorDropdown">
+              <option value="#ffffff" selected>White</option>
+              <option value="#f44336">Red</option>
+              <option value="#2196f3">Blue</option>
+              <option value="#4caf50">Green</option>
+              <option value="#ffeb3b">Yellow</option>
+            </select>
+          </div>
+          <button type="submit">Save Password</button>
+        </form>
+        <!-- Search Bar -->
+        <div id="search-container">
+          <input type="text" id="search-input" placeholder="Search Website..." />
+        </div>
+        <!-- List of saved passwords -->
+        <div id="password-list" class="password-list"></div>
+      </div>
+      <!-- Modal for showing full details & deleting -->
+      <div id="popup-modal" class="modal">
+        <div class="modal-content">
+          <span id="close-modal" class="close-modal" onclick="closeModal('popup-modal')">&times;</span>
+          <h2 id="modal-website"></h2>
+          <p><strong>Username:</strong> <span id="modal-username"></span></p>
+          <p><strong>Password:</strong> <span id="modal-password"></span></p>
+          <button id="delete-btn">Delete</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- Password Health Check Page -->
+    <section id="passwordHealth" class="page">
+      <h2>Enter Your Password To Test</h2>
+      <label>
+        Password:
+        <input type="password" id="health-password" placeholder="Enter your password">
+      </label>
+      <div id="health-feedback"></div>
+    </section>
+  </div>
+
+  <!-- Internal Navigation Script -->
+  <script>
+    function navigateTo(sectionId) {
+      const pages = document.querySelectorAll('.page');
+      pages.forEach(page => page.classList.remove('active'));
+      const target = document.getElementById(sectionId);
+      if (target) {
+        target.classList.add('active');
+      }
+      if (sectionId === "passwordSaver") {
+        loadPasswords();
+      }
+    }
+  
+    function closeModal(modalId) {
+      const modal = document.getElementById(modalId);
+      if (modal) modal.classList.remove('show-modal');
+    }
+  </script>
 </body>
 </html>
